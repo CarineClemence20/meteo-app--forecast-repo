@@ -78,12 +78,22 @@ searchFormElement.addEventListener("submit", displayWeatherInfo);
 //city that always run
 searchCity("kigali");
 
-let forecastElement = document.querySelector("#forecast");
-forecastElement.innerHTML = ` <div class="weather-forecast-day-info">
-   <div class="weather-forecast-day">Tue</div>
-   <div class="weather-forecast-icon">🌥️</div>
-   <div class="weather-forecast-temp-wrapper">
-     <div class="weather-forecast-temp"><strong>19°</strong></div>
-     <div class="weather-forecast-temp">9°</div>
-   </div>
- </div>`;
+function dispalyForecast() {
+  let days = ["Tue", "Wed", "Thur", "Fri", "Sat"];
+  let forecasthtml = "";
+
+  days.forEach(function (day) {
+    forecasthtml += ` <div class="weather-forecast-day-info">
+    <div class="weather-forecast-day">${day}</div>
+ <div class="weather-forecast-icon">🌥️</div>
+ <div class="weather-forecast-temp-wrapper">
+ <div class="weather-forecast-temp"><strong>19°</strong></div>
+ <div class="weather-forecast-temp">9°</div>
+ </div>
+</div>`;
+  });
+
+  let forecastElement = document.querySelector("#forecast");
+  forecastElement.innerHTML = forecasthtml;
+}
+dispalyForecast();
