@@ -48,13 +48,15 @@ function updateInfo(response) {
   let dateElement = document.querySelector("#date-element");
   dateElement.innerHTML = `${formatDate(date)}, `;
 
-  console.log(response.data.condition);
-
   let iconElement = document.querySelector("#icon");
-  console.log(iconElement);
+
   iconElement.innerHTML = `<img
   src="${response.data.condition.icon_url}" 
   class="temperature-icon"/>`;
+
+  // after we search for city it is when we call the forecast
+
+  getForecast(response.data.city);
 }
 
 // stage 3 define the search function that uses api response
@@ -75,25 +77,50 @@ let searchFormElement = document.querySelector("#search-form");
 
 searchFormElement.addEventListener("submit", displayWeatherInfo);
 
-//city that always run
-searchCity("kigali");
+///code for forecast
 
-function dispalyForecast() {
-  let days = ["Tue", "Wed", "Thur", "Fri", "Sat"];
+// step 1 get the api info using key and url
+
+function getForecast(city) {
+  let apiKey = "d2ebcoe34b6t502be4f636aa01ddf51f";
+  let forecastApiUrl = `https://api.shecodes.io/weather/v1/forecast?query=${city}&key=${apiKey}&units=metric`;
+
+  axios.get(forecastApiUrl).then(dispalyForecast);
+}
+
+function formatDay(timestamp) {
+  let date = new Date(timestamp * 1000);
+
+  let days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "sun"];
+
+  return days[date.getDay()];
+}
+function dispalyForecast(response) {
+  //an array of forecast data are called daily i the api json
   let forecasthtml = "";
+  let daily = response.data.daily;
 
-  days.forEach(function (day) {
-    forecasthtml += ` <div class="weather-forecast-day-info">
-    <div class="weather-forecast-day">${day}</div>
- <div class="weather-forecast-icon">🌥️</div>
- <div class="weather-forecast-temp-wrapper">
- <div class="weather-forecast-temp"><strong>19°</strong></div>
- <div class="weather-forecast-temp">9°</div>
- </div>
-</div>`;
+  // iterating through each object in the daily array to get data
+  daily.forEach(function (day, index) {
+    if (index < 5) {
+      forecasthtml += ` <div class="weather-forecast-day-info">
+      <div class="weather-forecast-day">${formatDay(day.time)}</div>
+      <div class="weather-forecast-icon">
+      <img src="${day.condition.icon_url}" alt="icon_image"/></div>
+      <div class="weather-forecast-temp-wrapper">
+      <div class="weather-forecast-temp"><strong>
+      ${Math.round(day.temperature.maximum)}°</strong></div>
+      <div class="weather-forecast-temp">${Math.round(
+        day.temperature.minimum
+      )}°</div>
+      </div>
+      </div>`;
+    }
   });
 
   let forecastElement = document.querySelector("#forecast");
   forecastElement.innerHTML = forecasthtml;
 }
-dispalyForecast();
+
+//city that always run
+searchCity("kigali");
